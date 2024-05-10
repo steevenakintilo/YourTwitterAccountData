@@ -29,3 +29,5 @@ Then to get your data just run
 ```bash
    python main.py
 ```
+
+And you will see all your twitter data
