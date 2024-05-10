@@ -58,7 +58,12 @@ class SeleniumData():
   options = webdriver.ChromeOptions()
   options.add_argument('--blink-settings=imagesEnabled=false')
   options.add_argument("--log-level=3")  # Suppress all logging levels
-  options.add_argument(r"--user-data-dir=C:\Users\sakin\AppData\Local\Google\Chrome\User Data\Profile 3")
+  
+  # C:\Users\your_usernema\AppData\Local\Google\Chrome\User Data
+  #Replace your_username with your username
+  #and Profile 3 by your profile number
+  
+  options.add_argument(r"--user-data-dir=C:\Users\your_username\AppData\Local\Google\Chrome\User Data\Profile 3")
   options.add_argument(r'--profile-directory=Profile 3')
   #options.add_argument('headless')
   driver = webdriver.Chrome(options=options)  # You can change this to whichever browser you prefer and have installed
@@ -141,6 +146,8 @@ def twitter_account_info():
   print("Nb_of_word:", data.Nb_of_word)
   print("Nb_of_unique_word:", data.Nb_of_unique_word)
   print("Nb_of_word_on_average:", data.Nb_of_word_on_average)
+  print("Nb of word in the petit prince:" , data.Nb_of_word_in_the_petit_prince)
+  print("Nb of char in the petit prince:" , data.Nb_of_char_in_the_petit_prince)
   print("number of time you wrote the petit prince by number of word: " , data.Nb_of_word_linked_to_petit_prince)
   print("number of time you wrote the petit prince by number of char: " , data.Nb_of_char_linked_to_petit_prince)
   print("yeah")
@@ -196,6 +203,7 @@ def number_of_word(data):
   list_of_word = []
   list_of_word_bigger_than_5 = []
   count_word = []
+  unique_word = []
   for Wrd in f:
     if "RT" not in Wrd[0:5]:
       Tweetword = Wrd[0:400].split("\n")[0].replace(",","").replace(":","")
@@ -204,6 +212,8 @@ def number_of_word(data):
         if "@" not in word and "https//t.co/" not in word and "window.YTD.tweets.part0" not in word and len(word) > 0:
           list_of_word.append(word)
           data.Nb_of_char += len(word)
+          if word not in unique_word:
+            unique_word.append(word)
   
   
   Top5MustUsedWord = []
@@ -217,12 +227,11 @@ def number_of_word(data):
   #     count_word.append(list_of_word.count(word))
   
 
-  unique_set = set(list_of_word_)
   data.Nb_of_word = len(list_of_word)
   data.Nb_of_word_on_average = int(round(data.Nb_of_word/(data.Nb_of_tweet + data.Nb_of_comment),0))
   data.Nb_of_char_on_average = int(round(data.Nb_of_char/(data.Nb_of_tweet + data.Nb_of_comment),0))
   
-  data.Nb_of_unique_word = len(unique_set)
+  data.Nb_of_unique_word = len(unique_word)
   
   
   data.Nb_of_word_linked_to_petit_prince = round((data.Nb_of_word/data.Nb_of_word_in_the_petit_prince),1)
@@ -277,6 +286,7 @@ def number_of_tweet(data):
     for i in range(1,6):
       data.Top5RepliedUser.append(sorted_list2[-i])
       data.Top5RepliedUserWithStat.append(str((sorted_list2[-i] , sorted_list1[-i] , len(list_of_user) , round(float((sorted_list1[-i]/len(list_of_user)) * 100),2), " %")))
+      
   else:
     for i in range(1,len(sorted_list1)):
       data.Top5RepliedUser.append(sorted_list2[-i])
@@ -293,7 +303,7 @@ def twitter_account_data():
   print("Start")
   start_time = time.time()
   twitter_account_info()
-  #delete_data()
+  delete_data()
   end_time = time.time()
   elapsed_time = end_time - start_time
   hours, minutes, remaining_seconds = convert_seconds_to_hms(int(elapsed_time))
