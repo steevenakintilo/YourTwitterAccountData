@@ -16,6 +16,7 @@ def print_file_info(path):
     return(content)
   except:
     return("ok")
+
 def get_account_creation_date(full_file):
   data = ""
   for f in full_file:
@@ -37,11 +38,10 @@ def get_account_data(full_file,info):
 def unzip_file():
   current_file = ""
   list_of_files = os.listdir()
-
   for file in list_of_files:
      if ".zip" in file:
         current_file = file
-        continue
+        break
   
   os.makedirs("twitter_data", exist_ok=True)
   with zipfile.ZipFile(current_file, 'r') as zip_ref:
