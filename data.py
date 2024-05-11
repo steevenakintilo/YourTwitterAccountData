@@ -28,10 +28,17 @@ class AccountData():
   Nb_of_rt = 0
   Nb_of_comment = 0
   Nb_of_tweet = 0
+  
   Top5RepliedUser = []
-  Top5RepliedUserWithStat = []
+  Top5RepliedUserNb = []
+  Top5RepliedUserPercent = []
+  UniqueRepliedUser = 0
+
   Top5DMedUser = []
-  Top5DmUserWithStat = []
+  Top5DMedUserNb = []
+  Top5DMedUserPercent = []
+  UniqueDMedUser = 0
+  
   Nb_of_account_blocked = 0
   Nb_of_tweet_liked = 0
   Nb_of_tweet_made_on_average = 0
@@ -46,11 +53,18 @@ class AccountData():
   Nb_of_unique_word = 0
   Nb_of_char_on_average = 0
   Nb_of_word_on_average = 0
-  Nb_of_word_linked_to_petit_prince = 0
-  Nb_of_char_linked_to_petit_prince = 0
+  Nb_of_time_you_wrote_le_petit_prince_by_word = 0
+  Nb_of_time_you_wrote_le_petit_prince_by_char = 0
   Nb_of_word_in_the_petit_prince = 14180
   Nb_of_char_in_the_petit_prince = 71595
-  
+  Nb_of_like = 0
+  Nb_of_like_on_average = 0
+  Nb_of_rts = 0
+  Nb_of_rt_on_average = 0
+  Top5MostLikedTweetNb = []
+  Top5MostLikedTweetUrl = []
+  WholeAccountData = {}
+  dataJson = ""
   
   
 
@@ -59,11 +73,12 @@ class SeleniumData():
   options.add_argument('--blink-settings=imagesEnabled=false')
   options.add_argument("--log-level=3")  # Suppress all logging levels
   
-  # C:\Users\your_usernema\AppData\Local\Google\Chrome\User Data
+  # C:\Users\your_username\AppData\Local\Google\Chrome\User Data
   #Replace your_username with your username
   #and Profile 3 by your profile number
+  # Everything is explained on the readme
   
-  options.add_argument(r"--user-data-dir=C:\Users\your_username\AppData\Local\Google\Chrome\User Data\Profile 3")
+  options.add_argument(r"--user-data-dir=C:\your_username\sakin\AppData\Local\Google\Chrome\User Data\Profile 3")
   options.add_argument(r'--profile-directory=Profile 3')
   #options.add_argument('headless')
   driver = webdriver.Chrome(options=options)  # You can change this to whichever browser you prefer and have installed
@@ -109,6 +124,7 @@ def convert_seconds_to_hms(seconds):
 
 def twitter_account_info():
   data = AccountData()
+  print("Start")
   number_of_dm(data)
   number_of_tweet(data)
   number_of_block(data)
@@ -116,41 +132,69 @@ def twitter_account_info():
   account_age(data)
   average_stat(data)
   number_of_word(data)
-  # Print values of attributes
-  print("Printing all values")
-  print("AccountId:", data.AccountId)
-  print("AccountCreationDate:", data.AccountCreationDate)
-  print("AccountUsername:", data.AccountUsername)
-  print("Nb_of_dm_send:", data.Nb_of_dm_send)
-  print("Nb_of_dm_received:", data.Nb_of_dm_received)
-  print("Nb_of_tweet_total:", data.Nb_of_tweet_total)
-  print("Nb_of_rt:", data.Nb_of_rt)
-  print("Nb_of_comment:", data.Nb_of_comment)
-  print("Nb_of_tweet:", data.Nb_of_tweet)
-  print("Top5RepliedUser:", data.Top5RepliedUser)
-  print("Top5RepliedUserWithStat:", data.Top5RepliedUserWithStat)
-  print("Top5DMedUser:", data.Top5DMedUser)
-  print("Top5DmUserWithStat:", data.Top5DmUserWithStat)
-  print("Nb_of_account_blocked:", data.Nb_of_account_blocked)
-  print("Nb_of_tweet_liked:", data.Nb_of_tweet_liked)
-  print("Account Age:" , data.AccountAgeInDay)
-  print("Nb_of_tweet_liked_on_average:" , data.Nb_of_tweet_liked_on_average)
-  print("Nb_of_tweet_made_on_average:", data.Nb_of_tweet_made_on_average)
-  print("Nb_of_rt_made_on_average:", data.Nb_of_rt_made_on_average)
-  print("Nb_of_comment_made_on_average:", data.Nb_of_comment_made_on_average)
-  print("Nb_of_all_tweet_made_on_average:", data.Nb_of_all_tweet_made_on_average)
-  print("Nb_of_dm_send_on_average:", data.Nb_of_dm_send_on_average)
-  print("Nb_of_dm_received_on_average:", data.Nb_of_dm_received_on_average)
-  print("Nb_of_char:", data.Nb_of_char)
-  print("Nb_of_char_on_average:", data.Nb_of_char_on_average)
-  print("Nb_of_word:", data.Nb_of_word)
-  print("Nb_of_unique_word:", data.Nb_of_unique_word)
-  print("Nb_of_word_on_average:", data.Nb_of_word_on_average)
-  print("Nb of word in the petit prince:" , data.Nb_of_word_in_the_petit_prince)
-  print("Nb of char in the petit prince:" , data.Nb_of_char_in_the_petit_prince)
-  print("number of time you wrote the petit prince by number of word: " , data.Nb_of_word_linked_to_petit_prince)
-  print("number of time you wrote the petit prince by number of char: " , data.Nb_of_char_linked_to_petit_prince)
-  print("yeah")
+  number_of_like_you_get(data)
+  number_of_rt_you_get(data)
+  write_data_to_json(data)
+  print("Json Data\n " , data.dataJson)
+  print("end")
+
+def write_data_to_json(data):  
+  data.WholeAccountData = {
+    "AccountId": data.AccountId,
+    "AccountCreationDate": data.AccountCreationDate,
+    "AccountAgeInDay": data.AccountAgeInDay,
+    "AccountUsername": data.AccountUsername,
+    "Nb_of_dm_send": data.Nb_of_dm_send,
+    "Nb_of_dm_received": data.Nb_of_dm_received,
+    "Nb_of_tweet_total": data.Nb_of_tweet_total,
+    "Nb_of_rt": data.Nb_of_rt,
+    "Nb_of_comment": data.Nb_of_comment,
+    "Nb_of_tweet": data.Nb_of_tweet, 
+    "Top5RepliedUser": data.Top5RepliedUser,
+    "Top5RepliedUserNb": data.Top5RepliedUserNb,
+    "Top5RepliedUserPercent": data.Top5RepliedUserPercent,
+    "UniqueRepliedUser":data.UniqueRepliedUser,
+    "Top5DMedUser": data.Top5DMedUser,
+    "Top5DMedUserNb": data.Top5DMedUserNb,
+    "Top5DMedUserPercent":data.Top5DMedUserPercent, 
+    "UniqueDMedUser":data.UniqueDMedUser,
+    "Nb_of_account_blocked": data.Nb_of_account_blocked,
+    "Nb_of_tweet_liked": data.Nb_of_tweet_liked,
+    "Nb_of_tweet_made_on_average": data.Nb_of_tweet_made_on_average,
+    "Nb_of_rt_made_on_average": data.Nb_of_rt_made_on_average,
+    "Nb_of_comment_made_on_average": data.Nb_of_comment_made_on_average,
+    "Nb_of_all_tweet_made_on_average": data.Nb_of_all_tweet_made_on_average,
+    "Nb_of_dm_send_on_average": data.Nb_of_dm_send_on_average,
+    "Nb_of_dm_received_on_average": data.Nb_of_dm_received_on_average,
+    "Nb_of_tweet_liked_on_average": data.Nb_of_tweet_liked_on_average,
+    "Nb_of_word": data.Nb_of_word,
+    "Nb_of_char": data.Nb_of_char,
+    "Nb_of_unique_word": data.Nb_of_unique_word,
+    "Nb_of_char_on_average": data.Nb_of_char_on_average,
+    "Nb_of_word_on_average": data.Nb_of_word_on_average,
+    "Nb_of_time_you_wrote_le_petit_prince_by_word": data.Nb_of_time_you_wrote_le_petit_prince_by_word,
+    "Nb_of_time_you_wrote_le_petit_prince_by_char": data.Nb_of_time_you_wrote_le_petit_prince_by_char,
+    "Nb_of_word_in_the_petit_prince": data.Nb_of_word_in_the_petit_prince,
+    "Nb_of_char_in_the_petit_prince": data.Nb_of_char_in_the_petit_prince,
+    "Nb_of_like" : data.Nb_of_like,
+    "Nb_of_like_on_average" : data.Nb_of_like_on_average,
+    "Nb_of_rts" : data.Nb_of_rts,
+    "Nb_of_rt_on_average" : data.Nb_of_rt_on_average,
+    "Top5MostLikedTweetUrl" : data.Top5MostLikedTweetUrl,
+    "Top5MostLikedTweetNb" : data.Top5MostLikedTweetNb
+
+  }
+
+
+      
+  
+  json_object = json.dumps(data.WholeAccountData, indent=4)
+ 
+  data.dataJson = json_object
+  # Writing to sample.json
+  with open("data.json", "w") as outfile:
+      outfile.write(json_object)
+
 
 def number_of_dm(data):
   f = print_file_info(r'twitter_data\data\direct-messages.js').replace('"',"")
@@ -162,7 +206,6 @@ def number_of_dm(data):
   list_of_user = []
   list_of_user_ = []
   count_user = []
-  alpha = "abcdefghijlmnopqrstuvwxyz"
   for user, user2 in zip(fs, fr):
     userDm = str(user[0:100].split("\n")[0].replace(",","").replace(":","").replace(" ","")).replace(data.AccountId,"").replace("-","").replace(" ","")
     userDm2 = str(user2[0:100].split("\n")[0].replace(",","").replace(":","").replace(" ","")).replace(data.AccountId,"").replace("-","").replace(" ","")
@@ -171,7 +214,6 @@ def number_of_dm(data):
     if "w" not in userDm2 and len(userDm2) > 3 and data.AccountId not in userDm2:
       list_of_user.append(userDm.replace("\n",""))
         
-  f1,f2,f3 = 0,0,0
 
   for user in list_of_user:
     if user not in list_of_user_ and len(user) > 5:
@@ -182,27 +224,22 @@ def number_of_dm(data):
   sorted_zipped_lists = sorted(zipped_lists)
   sorted_list1, sorted_list2 = zip(*sorted_zipped_lists)
   
+  data.UniqueDMedUser = len(list_of_user_)
   if len(sorted_list1) >= 6:
     for i in range(1,6):
       od = get_username_from_id(str(sorted_list2[-i]))
       data.Top5DMedUser.append(od)
-      #data.Top5DmUserWithStat.append(str((od , sorted_list1[-i] , len(list_of_user) , round(float((sorted_list1[-i]/len(list_of_user)) * 100),2), " %")))
-      data.Top5DmUserWithStat.append(str((od , sorted_list1[-i] , len(list_of_user) , round(float((sorted_list1[-i]/len(list_of_user)) * 100),2), " %")))
-  
+      data.Top5DMedUserNb.append(sorted_list1[-i])
+      data.Top5DMedUserPercent.append(round(float((sorted_list1[-i]/len(list_of_user)) * 100),2))
   else:
     for i in range(1,len(sorted_list1)):
       data.Top5DMedUser.append(sorted_list2[-i])
-      data.Top5DmUserWithStat.append(str((od , sorted_list1[-i] , len(list_of_user) , round(float((sorted_list1[-i]/len(list_of_user)) * 100),2), " %")))
-
-
+      data.Top5DMedUserNb.append(sorted_list1[-i])
+      data.Top5DMedUserPercent.append(round(float((sorted_list1[-i]/len(list_of_user)) * 100),2))
+  
 def number_of_word(data):
   f = print_file_info(r'twitter_data\data\tweets.js').replace('"',"").split("full_text")
-  x = 0
-  age = int(data.AccountAgeInDay)
-  list_of_word_ = []
   list_of_word = []
-  list_of_word_bigger_than_5 = []
-  count_word = []
   unique_word = []
   for Wrd in f:
     if "RT" not in Wrd[0:5]:
@@ -215,17 +252,6 @@ def number_of_word(data):
           if word not in unique_word:
             unique_word.append(word)
   
-  
-  Top5MustUsedWord = []
-  Top5MustUsedWordLongerThan5 = []
-  Nb_of_char = 0
-  Nb_of_char_on_average = 0
- 
-  # for word in list_of_word:
-  #   if word not in list_of_word_:
-  #     list_of_word_.append(word)
-  #     count_word.append(list_of_word.count(word))
-  
 
   data.Nb_of_word = len(list_of_word)
   data.Nb_of_word_on_average = int(round(data.Nb_of_word/(data.Nb_of_tweet + data.Nb_of_comment),0))
@@ -234,26 +260,9 @@ def number_of_word(data):
   data.Nb_of_unique_word = len(unique_word)
   
   
-  data.Nb_of_word_linked_to_petit_prince = round((data.Nb_of_word/data.Nb_of_word_in_the_petit_prince),1)
-  data.Nb_of_char_linked_to_petit_prince = round((data.Nb_of_char/data.Nb_of_char_in_the_petit_prince),1)
+  data.Nb_of_time_you_wrote_le_petit_prince_by_word = round((data.Nb_of_word/data.Nb_of_word_in_the_petit_prince),1)
+  data.Nb_of_time_you_wrote_le_petit_prince_by_char = round((data.Nb_of_char/data.Nb_of_char_in_the_petit_prince),1)
   
-  # zipped_lists = zip(count_word, list_of_word_)
-  # sorted_zipped_lists = sorted(zipped_lists)
-  # sorted_list1, sorted_list2 = zip(*sorted_zipped_lists)
-  
-  # # j = 0
-
-  # # if len(sorted_list1) >= 6:
-  # #   for i in range(1,len(sorted_list1)):
-  # #     if len(sorted_list2[-i]) > 12:
-  # #       data.Top5MustUsedWord.append((sorted_list2[-i],sorted_list1[-i]))
-  # #       j+=1
-  # #     if j >= 5:
-  # #       break
-  # # else:
-  # #   for i in range(1,len(sorted_list1)):
-  # #     data.Top5MustUsedWord.append(sorted_list2[-i])
-
   
 def number_of_tweet(data):
   f = print_file_info(r'twitter_data\data\tweets.js').replace('"',"")
@@ -271,7 +280,6 @@ def number_of_tweet(data):
     if len(userTweet) < 16 and userTweet.lower() != data.AccountUsername.lower():
       list_of_user.append(userTweet)
     
-  f1,f2,f3 = 0,0,0
 
   for user in list_of_user:
     if user not in list_of_user_:
@@ -282,15 +290,19 @@ def number_of_tweet(data):
   sorted_zipped_lists = sorted(zipped_lists)
   sorted_list1, sorted_list2 = zip(*sorted_zipped_lists)
   
+  data.UniqueRepliedUser = len(list_of_user_)
+  
   if len(sorted_list1) >= 6:
     for i in range(1,6):
       data.Top5RepliedUser.append(sorted_list2[-i])
-      data.Top5RepliedUserWithStat.append(str((sorted_list2[-i] , sorted_list1[-i] , len(list_of_user) , round(float((sorted_list1[-i]/len(list_of_user)) * 100),2), " %")))
+      data.Top5RepliedUserNb.append(sorted_list1[-i])
+      data.Top5RepliedUserPercent.append(round(float((sorted_list1[-i]/data.Nb_of_comment) * 100),2))
       
   else:
     for i in range(1,len(sorted_list1)):
       data.Top5RepliedUser.append(sorted_list2[-i])
-      data.Top5RepliedUserWithStat.append(str((sorted_list2[-i] , sorted_list1[-i] , len(list_of_user) , round(float((sorted_list1[-i]/len(list_of_user)) * 100),2), " %")))
+      data.Top5RepliedUserNb.append(sorted_list1[-i])
+      data.Top5RepliedUserPercent.append(round(float((sorted_list1[-i]/data.Nb_of_comment) * 100),2))
 
 def number_of_block(data):
   data.Nb_of_account_blocked = str(print_file_info(r'twitter_data\data\block.js').replace('"',"")).count("blocking")
@@ -298,6 +310,61 @@ def number_of_block(data):
 def number_of_like(data):
   data.Nb_of_tweet_liked = str(print_file_info(r'twitter_data\data\like.js').replace('"',"")).count("expandedUrl")
 
+def number_of_like_you_get(data):
+  f = print_file_info(r'twitter_data\data\tweets.js').replace('"',"").split("favorite_count")
+  nb_like = 0
+  index = 0
+  list_of_tweet = []
+  tweet_fav = []
+  for nbLike in f:    
+    userLike = nbLike[0:30].split("\n")[0].replace(",","").replace(":","").replace(" ","")
+    try:
+      tweetId = str(nbLike).split("in_reply_to_user_id")[0].replace(",","").replace(" ","").split(":")[3].replace("\n","")
+    except:
+      tweetId = ""
+    
+    if "window.YTD.tweets.part0=[" not in userLike:
+      if userLike[0] == "0" and index < data.Nb_of_rt:
+        index+=1
+      else:
+        nb_like+=int(userLike)
+        list_of_tweet.append("https://twitter.com/i/web/status/"+tweetId)
+        tweet_fav.append(int(userLike))
+
+  zipped_lists = zip(tweet_fav, list_of_tweet)
+  sorted_zipped_lists = sorted(zipped_lists)
+  sorted_list1, sorted_list2 = zip(*sorted_zipped_lists)
+  
+  if len(sorted_list1) >= 6:
+    for i in range(1,6):
+      data.Top5MostLikedTweetUrl.append(sorted_list2[-i])
+      data.Top5MostLikedTweetNb.append(sorted_list1[-i])
+      
+  else:
+    for i in range(1,len(sorted_list1)):
+      data.Top5MostLikedTweetUrl.append(sorted_list2[-i])
+      data.Top5MostLikedTweetNb.append(sorted_list1[-i])
+      
+  data.Nb_of_like = nb_like
+  data.Nb_of_like_on_average = round(nb_like/(data.Nb_of_comment+data.Nb_of_tweet),2)
+
+
+def number_of_rt_you_get(data):
+  f = print_file_info(r'twitter_data\data\tweets.js').replace('"',"").split("retweet_count")
+  nb_rt = 0
+  index = 0
+  for nbLike in f:    
+    userRt = nbLike[0:30].split("\n")[0].replace(",","").replace(":","").replace(" ","")
+    
+    if "window.YTD.tweets.part0=[" not in userRt:
+      if userRt[0] == "0" and index < data.Nb_of_rt:
+        index+=1
+      else:
+        nb_rt+=int(userRt)
+
+  data.Nb_of_rts = nb_rt
+  data.Nb_of_rt_on_average = round(nb_rt/(data.Nb_of_comment+data.Nb_of_tweet),2)
+  
 
 def twitter_account_data():
   print("Start")

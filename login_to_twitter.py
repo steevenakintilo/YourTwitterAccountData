@@ -13,7 +13,7 @@ options.add_argument("--log-level=3")  # Suppress all logging levels
 #Replace your_username with your username
 #and Profile 3 by your profile number
 
-options.add_argument(r"--user-data-dir=C:\Users\sakin\AppData\Local\Google\Chrome\User Data\Profile 3")
+options.add_argument(r"--user-data-dir=C:\Users\your_username\AppData\Local\Google\Chrome\User Data\Profile 3")
 options.add_argument(r'--profile-directory=Profile 3')
 #options.add_argument('headless')
 driver = webdriver.Chrome(options=options)  # You can change this to whichever browser you prefer and have installed
