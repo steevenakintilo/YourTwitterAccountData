@@ -22,7 +22,9 @@ Then first login to your twitter account with your google profile by running thi
    python login_to_twitter.py
 ```
 
-To connect to your twitter well you must have atleast 1 google chrome profil otherwise it won't work
+To connect your twitter well you must have atleast 1 google chrome profil otherwise it won't work
+
+Link to have the path of your google chrome: profile https://www.howtogeek.com/255653/how-to-find-your-chrome-profile-folder-on-windows-mac-and-linux/
 
 Then to get your data just run 
 
