@@ -8,6 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import os
 from datetime import datetime, timedelta, date
+import math
 
 class AccountData():  
   if os.path.exists(r'twitter_data\data\account.js') == False:  
@@ -16,6 +17,7 @@ class AccountData():
   
   if os.path.exists(r'twitter_data\data\account.js') == False:  
     print("The file provided is not twitter archive")
+    delete_data()
     exit()
   f = print_file_info(r'twitter_data\data\account.js').split("\n") 
   AccountId = get_account_data(f,"accountId").replace(",","")
@@ -63,6 +65,25 @@ class AccountData():
   Nb_of_rt_on_average = 0
   Top5MostLikedTweetNb = []
   Top5MostLikedTweetUrl = []
+  Nb_of_follower = 0
+  Nb_of_follower_on_average = 0
+  Nb_of_following = 0
+  Nb_of_following_on_average = 0
+  
+  Nb_of_tweet_made_on_average_time = "day"
+  Nb_of_rt_made_on_average_time = "day"
+  Nb_of_comment_made_on_average_time = "day"
+  Nb_of_all_tweet_made_on_average_time = "day"
+  Nb_of_dm_send_on_average_time = "day"
+  Nb_of_dm_received_on_average_time = "day"
+  Nb_of_tweet_liked_on_average_time = "day"
+  Nb_of_follower_on_average_time = "day"
+  Nb_of_following_on_average_time = "day"
+  
+  Nb_of_action = 0
+  Nb_of_action_on_average = 0
+  Nb_of_action_time = "day"
+
   WholeAccountData = {}
   dataJson = ""
   
@@ -77,8 +98,8 @@ class SeleniumData():
   #Replace your_username with your username
   #and Profile 3 by your profile number
   # Everything is explained on the readme
-  
-  options.add_argument(r"--user-data-dir=C:\your_username\sakin\AppData\Local\Google\Chrome\User Data\Profile 3")
+
+  options.add_argument(r"--user-data-dir=C:\Users\your_username\AppData\Local\Google\Chrome\User Data\Profile 3")
   options.add_argument(r'--profile-directory=Profile 3')
   #options.add_argument('headless')
   driver = webdriver.Chrome(options=options)  # You can change this to whichever browser you prefer and have installed
@@ -94,16 +115,63 @@ def account_age(data):
     date = datetime.strptime(date_str, '%Y-%m-%d').date()
     data.AccountAgeInDay = str(today - date).split(" ")[0].replace(" ","").strip()
 
+def is_day_week_month_year_decadade_data(nb):
+  r = 0
+  info = "day"
+  if nb < 0.9:
+    r = nb * 7
+    info = "week"
+    if r < 1:
+      r = nb * 31
+      info = "month"
+      if r < 1:
+        r = nb * 365
+        info = "year"
+        if r < 1:
+          r = nb * 3650
+          info = "decade"
+        if r < 1:
+          r = nb * 36500
+          info = "century"
+        if r < 1:
+          r = nb * 365000
+          info = "millennium"
+    return round_nb(r) , info
+  else:
+    return round(nb,1) , info
+
+def round_nb(nb):
+    nb_inf = int(nb)
+    if nb - nb_inf >= 0.5:
+        return  math.ceil(nb)
+    else:
+        return math.floor(nb)
+    
 def average_stat(data):
   
   age = int(data.AccountAgeInDay)
-  data.Nb_of_tweet_made_on_average = round((data.Nb_of_tweet/age),2)
-  data.Nb_of_rt_made_on_average = round((data.Nb_of_rt/age),2)
-  data.Nb_of_comment_made_on_average = round((data.Nb_of_comment/age),2)
-  data.Nb_of_all_tweet_made_on_average = round((data.Nb_of_tweet_total/age),2)
-  data.Nb_of_dm_send_on_average = round((data.Nb_of_dm_send/age),2)
-  data.Nb_of_dm_received_on_average = round((data.Nb_of_dm_received/age),2)
-  data.Nb_of_tweet_liked_on_average = round((data.Nb_of_tweet_liked/age),2)
+  data.Nb_of_tweet_made_on_average = round((data.Nb_of_tweet/age),10)
+  data.Nb_of_rt_made_on_average = round((data.Nb_of_rt/age),10)
+  data.Nb_of_comment_made_on_average = round((data.Nb_of_comment/age),10)
+  data.Nb_of_all_tweet_made_on_average = round((data.Nb_of_tweet_total/age),10)
+  data.Nb_of_dm_send_on_average = round((data.Nb_of_dm_send/age),10)
+  data.Nb_of_dm_received_on_average = round((data.Nb_of_dm_received/age),10)
+  data.Nb_of_tweet_liked_on_average = round((data.Nb_of_tweet_liked/age),10)
+  data.Nb_of_follower_on_average = round((data.Nb_of_follower/age),10)
+  data.Nb_of_following_on_average = round((data.Nb_of_following/age),10)
+  
+  data.Nb_of_action = int(data.Nb_of_tweet + data.Nb_of_rt + data.Nb_of_comment + data.Nb_of_dm_send + data.Nb_of_tweet_liked + data.Nb_of_following + data.Nb_of_account_blocked)
+  data.Nb_of_action_on_average = round((data.Nb_of_action/age),1)
+  data.Nb_of_tweet_made_on_average , data.Nb_of_tweet_made_on_average_time = is_day_week_month_year_decadade_data(data.Nb_of_tweet_made_on_average)
+  data.Nb_of_rt_made_on_average , data.Nb_of_rt_made_on_average_time = is_day_week_month_year_decadade_data(data.Nb_of_rt_made_on_average)
+  data.Nb_of_comment_made_on_average, data.Nb_of_comment_made_on_average_time = is_day_week_month_year_decadade_data(data.Nb_of_comment_made_on_average)
+  data.Nb_of_all_tweet_made_on_average, data.Nb_of_all_tweet_made_on_average_time = is_day_week_month_year_decadade_data(data.Nb_of_all_tweet_made_on_average)
+  data.Nb_of_dm_send_on_average, data.Nb_of_dm_send_on_average_time = is_day_week_month_year_decadade_data(data.Nb_of_dm_send_on_average)
+  data.Nb_of_dm_received_on_average, data.Nb_of_dm_received_on_average_time = is_day_week_month_year_decadade_data(data.Nb_of_dm_received_on_average)
+  data.Nb_of_tweet_liked_on_average, data.Nb_of_tweet_liked_on_average_time = is_day_week_month_year_decadade_data(data.Nb_of_tweet_liked_on_average)
+  data.Nb_of_follower_on_average, data.Nb_of_follower_on_average_time = is_day_week_month_year_decadade_data(data.Nb_of_follower_on_average)  
+  data.Nb_of_following_on_average, data.Nb_of_following_on_average_time = is_day_week_month_year_decadade_data(data.Nb_of_following_on_average)
+  data.Nb_of_action_on_average , data.Nb_of_action_on_average_time = is_day_week_month_year_decadade_data(data.Nb_of_action_on_average)
   
 def get_username_from_id(id):
     S = SeleniumData()
@@ -130,10 +198,12 @@ def twitter_account_info():
   number_of_block(data)
   number_of_like(data)
   account_age(data)
-  average_stat(data)
-  number_of_word(data)
   number_of_like_you_get(data)
   number_of_rt_you_get(data)
+  number_of_follower(data)
+  number_of_following(data)
+  number_of_word(data)
+  average_stat(data)
   write_data_to_json(data)
   print("Json Data\n " , data.dataJson)
   print("end")
@@ -161,12 +231,19 @@ def write_data_to_json(data):
     "Nb_of_account_blocked": data.Nb_of_account_blocked,
     "Nb_of_tweet_liked": data.Nb_of_tweet_liked,
     "Nb_of_tweet_made_on_average": data.Nb_of_tweet_made_on_average,
+    "Nb_of_tweet_made_on_average_time" : data.Nb_of_tweet_made_on_average_time,
     "Nb_of_rt_made_on_average": data.Nb_of_rt_made_on_average,
+    "Nb_of_rt_made_on_average_time" : data.Nb_of_rt_made_on_average_time,
     "Nb_of_comment_made_on_average": data.Nb_of_comment_made_on_average,
+    "Nb_of_comment_made_on_average_time" : data.Nb_of_comment_made_on_average_time,
     "Nb_of_all_tweet_made_on_average": data.Nb_of_all_tweet_made_on_average,
+    "Nb_of_all_tweet_made_on_average_time" : data.Nb_of_all_tweet_made_on_average_time,
     "Nb_of_dm_send_on_average": data.Nb_of_dm_send_on_average,
+    "Nb_of_dm_send_on_average_time" : data.Nb_of_dm_send_on_average_time,
     "Nb_of_dm_received_on_average": data.Nb_of_dm_received_on_average,
+    "Nb_of_dm_received_on_average_time" : data.Nb_of_dm_received_on_average_time,
     "Nb_of_tweet_liked_on_average": data.Nb_of_tweet_liked_on_average,
+    "Nb_of_tweet_liked_on_average_time" : data.Nb_of_tweet_liked_on_average_time,
     "Nb_of_word": data.Nb_of_word,
     "Nb_of_char": data.Nb_of_char,
     "Nb_of_unique_word": data.Nb_of_unique_word,
@@ -180,6 +257,15 @@ def write_data_to_json(data):
     "Nb_of_like_on_average" : data.Nb_of_like_on_average,
     "Nb_of_rts" : data.Nb_of_rts,
     "Nb_of_rt_on_average" : data.Nb_of_rt_on_average,
+    "Nb_of_follower" : data.Nb_of_follower,
+    "Nb_of_follower_on_average" : data.Nb_of_follower_on_average,
+    "Nb_of_follower_on_average_time" : data.Nb_of_follower_on_average_time,
+    "Nb_of_following" : data.Nb_of_following,
+    "Nb_of_following_on_average" : data.Nb_of_following_on_average,
+    "Nb_of_following_on_average_time" : data.Nb_of_following_on_average_time,
+    "Nb_of_action" : data.Nb_of_action,
+    "Nb_of_action_on_average" : data.Nb_of_action_on_average,
+    "Nb_of_action_time" : data.Nb_of_action_time,
     "Top5MostLikedTweetUrl" : data.Top5MostLikedTweetUrl,
     "Top5MostLikedTweetNb" : data.Top5MostLikedTweetNb
 
@@ -230,12 +316,12 @@ def number_of_dm(data):
       od = get_username_from_id(str(sorted_list2[-i]))
       data.Top5DMedUser.append(od)
       data.Top5DMedUserNb.append(sorted_list1[-i])
-      data.Top5DMedUserPercent.append(round(float((sorted_list1[-i]/len(list_of_user)) * 100),2))
+      data.Top5DMedUserPercent.append(round(float((sorted_list1[-i]/len(list_of_user)) * 100),1))
   else:
     for i in range(1,len(sorted_list1)):
       data.Top5DMedUser.append(sorted_list2[-i])
       data.Top5DMedUserNb.append(sorted_list1[-i])
-      data.Top5DMedUserPercent.append(round(float((sorted_list1[-i]/len(list_of_user)) * 100),2))
+      data.Top5DMedUserPercent.append(round(float((sorted_list1[-i]/len(list_of_user)) * 100),1))
   
 def number_of_word(data):
   f = print_file_info(r'twitter_data\data\tweets.js').replace('"',"").split("full_text")
@@ -296,19 +382,25 @@ def number_of_tweet(data):
     for i in range(1,6):
       data.Top5RepliedUser.append(sorted_list2[-i])
       data.Top5RepliedUserNb.append(sorted_list1[-i])
-      data.Top5RepliedUserPercent.append(round(float((sorted_list1[-i]/data.Nb_of_comment) * 100),2))
+      data.Top5RepliedUserPercent.append(round(float((sorted_list1[-i]/data.Nb_of_comment) * 100),1))
       
   else:
     for i in range(1,len(sorted_list1)):
       data.Top5RepliedUser.append(sorted_list2[-i])
       data.Top5RepliedUserNb.append(sorted_list1[-i])
-      data.Top5RepliedUserPercent.append(round(float((sorted_list1[-i]/data.Nb_of_comment) * 100),2))
+      data.Top5RepliedUserPercent.append(round(float((sorted_list1[-i]/data.Nb_of_comment) * 100),1))
 
 def number_of_block(data):
   data.Nb_of_account_blocked = str(print_file_info(r'twitter_data\data\block.js').replace('"',"")).count("blocking")
 
 def number_of_like(data):
   data.Nb_of_tweet_liked = str(print_file_info(r'twitter_data\data\like.js').replace('"',"")).count("expandedUrl")
+
+def number_of_follower(data):
+  data.Nb_of_follower = str(print_file_info(r'twitter_data\data\follower.js').replace('"',"")).count("follower")
+
+def number_of_following(data):
+  data.Nb_of_following = str(print_file_info(r'twitter_data\data\following.js').replace('"',"")).count("following")
 
 def number_of_like_you_get(data):
   f = print_file_info(r'twitter_data\data\tweets.js').replace('"',"").split("favorite_count")
@@ -346,8 +438,9 @@ def number_of_like_you_get(data):
       data.Top5MostLikedTweetNb.append(sorted_list1[-i])
       
   data.Nb_of_like = nb_like
-  data.Nb_of_like_on_average = round(nb_like/(data.Nb_of_comment+data.Nb_of_tweet),2)
-
+  data.Nb_of_like_on_average = round(nb_like/(data.Nb_of_comment+data.Nb_of_tweet),1)
+  if data.Nb_of_like_on_average < 0.2:
+    data.Nb_of_like_on_average = round(nb_like/(data.Nb_of_comment+data.Nb_of_tweet),3)
 
 def number_of_rt_you_get(data):
   f = print_file_info(r'twitter_data\data\tweets.js').replace('"',"").split("retweet_count")
@@ -363,15 +456,21 @@ def number_of_rt_you_get(data):
         nb_rt+=int(userRt)
 
   data.Nb_of_rts = nb_rt
-  data.Nb_of_rt_on_average = round(nb_rt/(data.Nb_of_comment+data.Nb_of_tweet),2)
+  data.Nb_of_rt_on_average = round(nb_rt/(data.Nb_of_comment+data.Nb_of_tweet),1)
+  if data.Nb_of_rt_on_average < 0.2:
+    data.Nb_of_rt_on_average = round(nb_rt/(data.Nb_of_comment+data.Nb_of_tweet),3)
   
 
 def twitter_account_data():
-  print("Start")
-  start_time = time.time()
-  twitter_account_info()
-  delete_data()
-  end_time = time.time()
-  elapsed_time = end_time - start_time
-  hours, minutes, remaining_seconds = convert_seconds_to_hms(int(elapsed_time))
-  print(f"It tooks {hours} hours, {minutes} minutes, and {remaining_seconds} seconds.")
+  try:
+    print("Start")
+    start_time = time.time()
+    twitter_account_info()
+    delete_data()
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    hours, minutes, remaining_seconds = convert_seconds_to_hms(int(elapsed_time))
+    print(f"It tooks {hours} hours, {minutes} minutes, and {remaining_seconds} seconds.")
+  except:
+    print("error")
+    delete_data()
