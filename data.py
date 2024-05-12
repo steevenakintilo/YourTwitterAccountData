@@ -172,6 +172,7 @@ def average_stat(data):
   data.Nb_of_follower_on_average, data.Nb_of_follower_on_average_time = is_day_week_month_year_decadade_data(data.Nb_of_follower_on_average)  
   data.Nb_of_following_on_average, data.Nb_of_following_on_average_time = is_day_week_month_year_decadade_data(data.Nb_of_following_on_average)
   data.Nb_of_action_on_average , data.Nb_of_action_on_average_time = is_day_week_month_year_decadade_data(data.Nb_of_action_on_average)
+  data.Nb_of_action_on_average = int(data.Nb_of_action_on_average)
   
 def get_username_from_id(id):
     S = SeleniumData()
@@ -288,7 +289,12 @@ def number_of_dm(data):
   data.Nb_of_dm_received = f.count(f"recipientId : {str(data.AccountId)}")
   fr = f.split("recipientId")
   fs = f.split("senderId")
-  
+  if data.Nb_of_dm_send == 0 and data.Nb_of_dm_received == 0:
+    data.Top5DMedUser = []
+    data.Top5DMedUserNb.append = []
+    data.Top5DMedUserPercent = []
+    return
+
   list_of_user = []
   list_of_user_ = []
   count_user = []
@@ -356,6 +362,12 @@ def number_of_tweet(data):
   data.Nb_of_rt = f.count("full_text : RT")
   data.Nb_of_comment = f.count("full_text : @")
   data.Nb_of_tweet_total = f.count("full_text : ")
+
+  if data.Nb_of_comment == 0:
+    data.Top5RepliedUser = []
+    data.Top5RepliedUserNb = []
+    data.Top5RepliedUserPercent = []
+    return
   data.Nb_of_tweet = data.Nb_of_tweet_total - (data.Nb_of_rt + data.Nb_of_comment)
   list_of_user_replied = f.split("in_reply_to_screen_name")
   list_of_user = []
@@ -438,6 +450,8 @@ def number_of_like_you_get(data):
       data.Top5MostLikedTweetNb.append(sorted_list1[-i])
       
   data.Nb_of_like = nb_like
+  if data.Nb_of_comment+data.Nb_of_tweet == 0:
+    return
   data.Nb_of_like_on_average = round(nb_like/(data.Nb_of_comment+data.Nb_of_tweet),1)
   if data.Nb_of_like_on_average < 0.2:
     data.Nb_of_like_on_average = round(nb_like/(data.Nb_of_comment+data.Nb_of_tweet),3)
@@ -456,6 +470,8 @@ def number_of_rt_you_get(data):
         nb_rt+=int(userRt)
 
   data.Nb_of_rts = nb_rt
+  if data.Nb_of_comment+data.Nb_of_tweet == 0:
+    return
   data.Nb_of_rt_on_average = round(nb_rt/(data.Nb_of_comment+data.Nb_of_tweet),1)
   if data.Nb_of_rt_on_average < 0.2:
     data.Nb_of_rt_on_average = round(nb_rt/(data.Nb_of_comment+data.Nb_of_tweet),3)
