@@ -6,7 +6,7 @@ First download your twitter archive on the root of this directory
 
 Link:
 
-https://help.twitter.com/en/managing-your-account/how-to-download-your-x-archive
+https://help.twitter.com/fr/managing-your-account/how-to-download-your-x-archive
 https://help.twitter.com/en/managing-your-account/how-to-download-your-x-archive
 
 To make the code work you will need to have Python and Pip installed in your computer
